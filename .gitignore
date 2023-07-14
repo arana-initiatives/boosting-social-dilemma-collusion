@@ -1,5 +1,6 @@
 # Logger experiment data files
 logs/
+*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

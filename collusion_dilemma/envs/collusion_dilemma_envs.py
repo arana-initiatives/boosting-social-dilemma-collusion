@@ -133,10 +133,12 @@ class CollusionDilemmaEnv(AECEnv):
         return np.array(self.observations[agent])
 
     def step(self, action):
-        
-        if action:
-            if not 0 <= action <= 1:
+        # TODO: Find exact error reason for action attaining out of bound values
+        if action: # action value clipping for compatibility sanity
+            if action > 1:
                 action = 1
+            elif action < 0:
+                action = 0
 
         if (
             self.terminations[self.agent_selection]

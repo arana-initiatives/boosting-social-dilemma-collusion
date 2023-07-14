@@ -1,0 +1,14 @@
+env_name: "CollusionDilemmaEnv"
+num_agents: 2
+hetero_prob: 0.
+eps_len: 10
+framework: "torch" # framework specifier, choices=["tf", "tf2", "torch"]
+as_test: True # actions: "store_true" or "store_false", script running as test or not
+# stop_reward must be achieved within stop_timesteps AND stop_iters
+stop_iters: 50 # number of iterations to train
+stop_timesteps: 6000 # number of timesteps to train
+stop_reward: 200 # feasable reward choice 100 but not 200, reward at which we stop training
+policy_choices: ["always_same", "beat_last"]
+train_batch_size: 256
+gamma: 0.85
+metric_smoothing_eps_len: 100
