@@ -9,7 +9,6 @@ from tianshou.policy import RandomPolicy, MultiAgentPolicyManager
 def random_agent_tester(num_agents=2, render=.1):
     env = PettingZooEnv(CollusionDilemmaEnv(num_agents=num_agents))
     agent_policies = [RandomPolicy() for idx in range(num_agents)]
-    print(agent_policies)
     policy = MultiAgentPolicyManager(agent_policies, env)
     env = DummyVectorEnv([lambda: env])
     collector = Collector(policy, env)

@@ -102,7 +102,7 @@ class CollusionDilemmaEnv(AECEnv):
             zip(self.possible_agents, list(range(len(self.possible_agents))))
         )
         self.agents = self.possible_agents[:]
-        self.state = np.random.randint(0, self.num_actions, size=self._num_agents) # represents all the taken actions
+        self.state = np.random.randint(0, self.num_actions-1, size=self._num_agents) # represents all the taken actions
         self.observations = {agent: self.state[self.agent_name_mapping[agent]] for agent in self.agents}
         self.rewards = {agent: 0 for agent in self.agents}
         # keeps track of current observed state & episode interactions
@@ -115,7 +115,7 @@ class CollusionDilemmaEnv(AECEnv):
         
         self.agents = self.possible_agents[:]
         self.rewards = {agent: 0 for agent in self.agents}
-        self.state = np.random.randint(0, self.num_actions, size=self._num_agents) # represents all the taken actions
+        self.state = np.random.randint(0, self.num_actions-1, size=self._num_agents) # represents all the taken actions
         self.observations = {agent: self.state[self.agent_name_mapping[agent]] for agent in self.agents}
         self.infos = {agent: {} for agent in self.agents}
         self._cumulative_rewards = {agent: 0. for agent in self.agents}
@@ -134,6 +134,10 @@ class CollusionDilemmaEnv(AECEnv):
 
     def step(self, action):
         
+        if action:
+            if not 0 <= action <= 1:
+                action = 1
+
         if (
             self.terminations[self.agent_selection]
             or self.truncations[self.agent_selection]
@@ -150,6 +154,7 @@ class CollusionDilemmaEnv(AECEnv):
         
         if self._agent_selector.is_last():
             # rewards for all agents are placed in the .rewards dictionary
+            
             self.rewards = { id: reduce(operator.getitem, self.state, self.payoff_vector)[index] \
                     for id, index in self.agent_name_mapping.items() }
 
