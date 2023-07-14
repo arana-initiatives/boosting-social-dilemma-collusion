@@ -45,10 +45,14 @@ torch, _ = try_import_torch()
 
 def config_loader(config_path):
     return OmegaConf.load(config_path)
+
 # load the configuration file
 # TODO: uncomment the configuration to select amongst homogenous or heterogenous agents
-# configs = config_loader(cfg_pth.A3C_BASELINE_HMG_TRAINER_CONFIG)
-configs = config_loader(cfg_pth.A3C_BASELINE_HMG_TRAINER_CONFIG)
+# configs = config_loader(cfg_pth.A3C_BASELINE_HMG_TRAINER_CONFIG) # Option 1
+# configs = config_loader(cfg_pth.A3C_BASELINE_HMG_TRAINER_CONFIG) # Option 2
+configs = config_loader(cfg_pth.A3C_LARGE_HTR_TRAINER_CONFIG) # Option 3
+# configs = config_loader(cfg_pth.A3C_LARGE_HMG_TRAINER_CONFIG) # Option 4
+
 
 def env_creator(config):
     env = CollusionDilemmaEnv(num_agents=config.num_agents,
@@ -93,7 +97,7 @@ def run_heuristic_vs_learned(args, use_lstm=False, algorithm="PG"):
         .rollouts(
             num_rollout_workers=0,
             num_envs_per_worker=4,
-            rollout_fragment_length=10,
+            rollout_fragment_length=64,
         )
         .training(
             train_batch_size=args.train_batch_size,

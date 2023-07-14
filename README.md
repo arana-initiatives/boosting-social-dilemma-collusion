@@ -26,13 +26,17 @@ __Note:__ Installing this setup can cause some unexpected issues. Please, feel f
 #### Initial Results and Discussion
 
 The experiment results between homogeneous and heterogeneous agents in two agent systems for A3C decentralized executors with partial observability are conducted from the codebase present in this repository.
-The success log files highlight that collusion starts to happen always even under a few thousand episodes without any explicit replay buffer design.
-Second, for the unsuccessful log files we set the reward value to unfeasible reward accumulation values to observe the behavior upon elongated training.
+The output logs of different experiment results, specifically between homogeneous and heterogeneous agents in two agent systems for A3C decentralized executors with partial observability.
+The success logs highlight that collusion starts to happen always even under a few thousand episodes without any explicit replay buffer design.
+Second, for the unsuccessful logs we set the reward value to unfeasible reward accumulation values to observe the behavior upon elongated training.
 We observe that for both homogeneous and heterogeneous agents the collusion happens successfully and average reward keeps on increasing where the dominant agent maintains more reward share.
 From an implementation perspective, baseline A3C parameterization of the network and other hyperparameters does sometimes destabilize the learning parameters unexpectedly.
 
 Here, half of the actions for each agent does not yield any rewards if cooperation/collusion does not happen making this environment relatively sparse.
+And, it makes the pay-off matrix/vector even more sparse when the number of agents increases which makes the convergence problem harder.
 With our experimentation, we found that in this setup with simplicity in agent strategy options _(i.e. action-space/state reformulation design)_ the collusion happens fastest in a decentralized executor based true multi-agent setting.
 The collusion also persists for heterogeneous agents as well, and also the simpler strategies are overpowered heavily by more novel strategies.
+Also, we observe that collusion easily happens for a relatively larger number of agents as well.
 Hence, collusion propensity is increased by a multi-agent implementation with simplistic strategy reformulation design.
+And it is highly robust to even more wider oligopolies which can include heterogeneous agents as well.
 This simple experimental setup highlights the threat that the automated collusion algorithms have in realistic decentralized executor settings.
