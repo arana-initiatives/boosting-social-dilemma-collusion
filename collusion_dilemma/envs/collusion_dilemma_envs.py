@@ -22,12 +22,11 @@ class CollusionDilemmaParallelEnv(ParallelEnv):
         "name": "collusion_dilemma_parallel_v0",
     }
 
-    def __init__(self, num_agents=2, hetero_prob=0., eps_len=5, coop_flag=True):
+    def __init__(self, num_agents=2, hetero_prob=0., eps_len=5):
         self.num_actions = 2 # fixed binary action choices: "to collude, or not to"
         self._num_agents = num_agents
         self._hetero_prob = hetero_prob
         self.eps_len = eps_len
-        self.coop_flag = coop_flag
         self.possible_agents = _get_agent_names(self._num_agents)
         self.observation_spaces = Box(low=0.0, high=self.num_actions - 1, shape=(self._num_agents, ), dtype=np.float32)
         self.payoff_vector = CollusionPayoffs(self._num_agents, self._hetero_prob).agent_payoffs
@@ -90,12 +89,11 @@ class CollusionDilemmaEnv(AECEnv):
         "name": "collusion_dilemma_v0",
     }
 
-    def __init__(self, num_agents=2, hetero_prob=0., eps_len=10, coop_flag=True):
+    def __init__(self, num_agents=2, hetero_prob=0., eps_len=10):
         self.num_actions = 2 # fixed binary action choices: "to collude, or not to"
         self._num_agents = num_agents
         self._hetero_prob = hetero_prob
         self.eps_len = eps_len
-        self.coop_flag = coop_flag
         self.possible_agents = _get_agent_names(self._num_agents)
         self._observation_spaces = { agent: Discrete(self.num_actions) for agent in self.possible_agents }
         self._action_spaces = { agent: Discrete(self.num_actions) for agent in self.possible_agents }
