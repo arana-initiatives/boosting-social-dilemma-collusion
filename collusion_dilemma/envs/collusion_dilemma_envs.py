@@ -22,14 +22,15 @@ class CollusionDilemmaParallelEnv(ParallelEnv):
         "name": "collusion_dilemma_parallel_v0",
     }
 
-    def __init__(self, num_agents=2, hetero_prob=0., eps_len=5):
+    def __init__(self, num_agents=2, hetero_prob=0., eps_len=5, gov_rek=False):
+        self.gov_rek = gov_rek
         self.num_actions = 2 # fixed binary action choices: "to collude, or not to"
         self._num_agents = num_agents
         self._hetero_prob = hetero_prob
         self.eps_len = eps_len
         self.possible_agents = _get_agent_names(self._num_agents)
         self.observation_spaces = Box(low=0.0, high=self.num_actions - 1, shape=(self._num_agents, ), dtype=np.float32)
-        self.payoff_vector = CollusionPayoffs(self._num_agents, self._hetero_prob).agent_payoffs
+        self.payoff_vector = CollusionPayoffs(self._num_agents, self._hetero_prob, self.eps_len, self.gov_rek).agent_payoffs
         self.agent_name_mapping = dict(
             zip(self.possible_agents, list(range(len(self.possible_agents))))
         )
@@ -89,7 +90,8 @@ class CollusionDilemmaEnv(AECEnv):
         "name": "collusion_dilemma_v0",
     }
 
-    def __init__(self, num_agents=2, hetero_prob=0., eps_len=10):
+    def __init__(self, num_agents=2, hetero_prob=0., eps_len=10, gov_rek=False):
+        self.gov_rek = gov_rek
         self.num_actions = 2 # fixed binary action choices: "to collude, or not to"
         self._num_agents = num_agents
         self._hetero_prob = hetero_prob
@@ -97,7 +99,7 @@ class CollusionDilemmaEnv(AECEnv):
         self.possible_agents = _get_agent_names(self._num_agents)
         self._observation_spaces = { agent: Discrete(self.num_actions) for agent in self.possible_agents }
         self._action_spaces = { agent: Discrete(self.num_actions) for agent in self.possible_agents }
-        self.payoff_vector = CollusionPayoffs(self._num_agents, self._hetero_prob).agent_payoffs
+        self.payoff_vector = CollusionPayoffs(self._num_agents, self._hetero_prob, self.eps_len, self.gov_rek).agent_payoffs
         self.agent_name_mapping = dict(
             zip(self.possible_agents, list(range(len(self.possible_agents))))
         )

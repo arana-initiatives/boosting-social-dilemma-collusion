@@ -1,4 +1,5 @@
 # import statements
+import random
 import numpy as np
 from collusion_dilemma.common.constants import *
 
@@ -10,8 +11,24 @@ import operator
 def _update_base_payoffs(payoff_values, append_value):
     return np.insert(payoff_values, obj=0, values=append_value, axis=-1)
 
+def _add_payoff_noise(payoff_values, noise, const_noise=False):
+    if const_noise:
+        return payoff_values + round(random.uniform(-noise, noise),3)
+    return payoff_values + np.round(np.random.uniform(low=-noise, high=noise, size=payoff_values.shape), 3) 
+
+def _get_pbrs_factor(payoff_values, eps_len, num_agents):
+    max_reward_arr = np.ones(num_agents, dtype=np.int8)
+    return sum(reduce(operator.getitem, max_reward_arr, payoff_values)) / eps_len
+
+def _add_temperature_tuning(payoff_values, temperature_val):
+    # apply this function to payoff matrix before adding the noise
+    zero_masks, non_zero_masks = payoff_values == 0., payoff_values != 0.
+    payoff_values[zero_masks] = temperature_val
+    payoff_values[non_zero_masks] = payoff_values[non_zero_masks] - temperature_val
+    return payoff_values
+
 class CollusionPayoffs():
-    def __init__(self, num_agents=2, hetero_prob=0.):
+    def __init__(self, num_agents=2, hetero_prob=0., eps_len=1, gov_rek=False):
         self.num_agents = num_agents
         self.hetero_prob = hetero_prob
         self.agent_payoffs = self.generate_payoff_vector(self.num_agents, self.hetero_prob)
