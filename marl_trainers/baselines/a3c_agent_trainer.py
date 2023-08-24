@@ -1,4 +1,4 @@
-"""A simple multi-agent env baseline with two agent social dilemma problem scenario.
+"""A simple multi-agent env baseline with N-agent social dilemma problem scenario.
 
 This script demonstrates running the following policies in competition for the above problem:
     (1) heuristic policy of repeating the same move

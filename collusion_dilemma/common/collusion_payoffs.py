@@ -22,7 +22,7 @@ def _get_pbrs_factor(eps_len, num_agents, hetero_prob):
     if hetero_prob > 0:
         max_expct_agent_rwd = 1*(1-hetero_prob) + 2*hetero_prob
 
-    return max_expct_agent_rwd / (eps_len * num_agents)
+    return max_expct_agent_rwd / np.sqrt(eps_len * num_agents)
 
 def _add_temperature_tuning(payoff_values, temperature_val):
     # apply this function to payoff matrix before adding the noise
