@@ -32,7 +32,7 @@ def _add_temperature_tuning(payoff_values, temperature_val):
     return payoff_values
 
 class CollusionPayoffs():
-    def __init__(self, num_agents=2, hetero_prob=0., eps_len=1, gov_rek=False, zero_mean=False, noise=0., const_noise=False, temperature=0.):
+    def __init__(self, num_agents=2, hetero_prob=0., eps_len=1, gov_rek=False, zero_mean=True, noise=0.1, const_noise=False, temperature=0.1):
         self.num_agents = num_agents
         self.hetero_prob = hetero_prob
         self.eps_len = eps_len

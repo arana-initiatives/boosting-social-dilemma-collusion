@@ -13,3 +13,4 @@ policy_choices: ["always_same", "beat_last"]
 train_batch_size: 200
 gamma: 0.9
 metric_smoothing_eps_len: 100
+gov_rek: False

@@ -1,9 +1,9 @@
-"""A simple multi-agent env baseline with N-agent social dilemma problem scenario.
+"""A simple multi-agent env baseline with N-agent social dilemma problem.
 
 This script demonstrates running the following policies in competition for the above problem:
     (1) heuristic policy of repeating the same move
     (2) heuristic policy of beating the last opponent move
-    (3) LSTM/feedforward PG policies
+    (3) LSTM/feedforward PPO policies
     (4) LSTM policy with custom entropy loss
 """
 
@@ -23,11 +23,11 @@ import ray
 from ray import air, tune
 from ray.rllib.algorithms.algorithm_config import AlgorithmConfig
 from ray.rllib.algorithms.pg import (
-    PG,
-    PGConfig,
-    PGTF2Policy,
-    PGTF1Policy,
-    PGTorchPolicy,
+    PPO,
+    PPOConfig,
+    PPOTF2Policy,
+    PPOTF1Policy,
+    PPOTorchPolicy,
 )
 from ray.rllib.env import PettingZooEnv
 from ray.rllib.examples.policy.rock_paper_scissors_dummies import (
@@ -46,16 +46,19 @@ torch, _ = try_import_torch()
 def config_loader(config_path):
     return OmegaConf.load(config_path)
 
-# load the configuration file
+# load the specific single configuration file for carrying out the experiment
 # TODO: uncomment the configuration to select amongst homogenous or heterogenous agents
-# configs = config_loader(cfg_pth.A3C_BASELINE_HMG_TRAINER_CONFIG) # Option 1
+# TODO: change the gov_rek flag in the configuration file for loading the governance layer
+
+configs = config_loader(cfg_pth.PPO_BASELINE_HMG_TRAINER_CONFIG) # Option 1
 # configs = config_loader(cfg_pth.A3C_BASELINE_HMG_TRAINER_CONFIG) # Option 2
-configs = config_loader(cfg_pth.A3C_LARGE_HTR_TRAINER_CONFIG) # Option 3
+# configs = config_loader(cfg_pth.A3C_LARGE_HTR_TRAINER_CONFIG) # Option 3
 # configs = config_loader(cfg_pth.A3C_LARGE_HMG_TRAINER_CONFIG) # Option 4
 
 
 def env_creator(config):
     env = CollusionDilemmaEnv(num_agents=config.num_agents,
+                              gov_rek=config.gov_rek,
                               hetero_prob=config.hetero_prob,
                               eps_len=config.eps_len)
     return env
@@ -215,3 +218,8 @@ if __name__ == "__main__":
 
     run_with_custom_entropy_loss(configs, stop=stop)
     print("run_with_custom_entropy_loss: ok.")
+
+# https://github.com/ray-project/ray/blob/master/rllib/examples/rock_paper_scissors_multiagent.py, default implementation taken
+# https://flatland.aicrowd.com/environment/interface.html, setup PPO
+# https://github.com/ray-project/ray/blob/master/rllib/examples/two_step_game.py, setup stop values, add them to config as well
+# https://github.com/ray-project/ray/blob/master/rllib/examples/custom_eval.py, evaluation script metric setup

@@ -1,12 +1,12 @@
 """visualization: impact of different experimentation parameters
    on reward accumulation distribution at various episodes length."""
+
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from collusion_dilemma.common.constants import *
 from collections import OrderedDict
-
 # import statements from matplotlib package font style setup
 import matplotlib.font_manager
 matplotlib.font_manager.findSystemFonts(fontpaths=None, fontext='ttf')
@@ -16,7 +16,6 @@ plt.rcParams['font.serif'] = ['Times New Roman'] + plt.rcParams['font.serif']
 # setting up the plotter function with 'Times New Roman' font style
 sns.set(font="Times New Roman")
 sns.set_style({'font.family': 'Times New Roman'})
-
 
 
 def _fill_reward_vals(val_arr, num_agents, pbrs_factor, hetero_agents=False, val_type="min", gov_rek=False, zero_mean=False):
@@ -29,7 +28,7 @@ def _fill_reward_vals(val_arr, num_agents, pbrs_factor, hetero_agents=False, val
                     if zero_mean:
                         val_arr[i][j] = 0 + -pbrs_factor*num_agents + np.round(np.random.uniform(low=-NOISE_VAL, high=NOISE_VAL), 3) * (i+1)
                     else:
-                        val_arr[i][j] = 0 + np.round(np.random.uniform(low=-NOISE_VAL, high=NOISE_VAL), 3) * (i+1)    
+                        val_arr[i][j] = 0 + .25*pbrs_factor*num_agents + np.round(np.random.uniform(low=-NOISE_VAL, high=NOISE_VAL), 3) * (i+1)    
                 else:
                     val_arr[i][j] = 0 + np.round(np.random.uniform(low=-NOISE_VAL, high=NOISE_VAL), 3) * (i+1)
             
@@ -48,7 +47,6 @@ def _fill_reward_vals(val_arr, num_agents, pbrs_factor, hetero_agents=False, val
             val_arr[i][j] = val_arr[i][j]*(i+1) # to obtain cummulative rewards
 
     return val_arr
-
 
 
 def _plotter(max_eps_len, rewards_values, reward_ci_values, title):
@@ -74,26 +72,26 @@ def _plotter(max_eps_len, rewards_values, reward_ci_values, title):
     plt.xlim([0, max_eps_len-1])
     ax.set_ylim([-15., 115])
     plt.xlabel('Episode Duration', fontsize=15)
-    plt.ylabel('Accumulated Reward Returns', fontsize=15)
+    plt.ylabel('Expected Reward Returns', fontsize=15)
     lgd=plt.legend(
     frameon=True, fancybox=True, \
     # prop={'size':14}, handles=color_patch, loc="best")
-    prop={'weight':'bold', 'size':12}, handles=color_patch, loc="upper left")
-    plt.title(title, fontsize=18)
+    prop={'weight':'bold', 'size':14}, handles=color_patch, loc="upper left")
+    plt.title(title, fontsize=20)
     ax = plt.gca()
     
     # uncomment for adding custom tick values
     # ax.set_xticks([10, 20, 30, 40, 50])
     # ax.set_xticklabels([0.5, 1, 1.5, 2.5, 3.0])
 
-    plt.setp(ax.get_xticklabels(), fontsize=14)
-    plt.setp(ax.get_yticklabels(), fontsize=14)
+    plt.setp(ax.get_xticklabels(), fontsize=15)
+    plt.setp(ax.get_yticklabels(), fontsize=15)
     sns.despine()
     plt.tight_layout()
     plt.show()
 
 
-def plot_reward_dist(max_eps_len=16, num_agents=4, hetero_agents=True, zero_mean=False, title=None):
+def plot_reward_dist(max_eps_len=16, num_agents=4, hetero_agents=True, zero_mean=True, title=None):
     if title is None:
         title = ""
     
@@ -144,4 +142,4 @@ def plot_reward_dist(max_eps_len=16, num_agents=4, hetero_agents=True, zero_mean
 
 
 if __name__ == "__main__":
-    plot_reward_dist(title="Cumulative Reward Distribution for Baseline Kernels")
+    plot_reward_dist(title="Cumulative Rewards for Zero-Mean Kernels")
