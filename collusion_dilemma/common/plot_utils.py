@@ -70,7 +70,7 @@ def _plotter(max_eps_len, rewards_values, reward_ci_values, title):
         color_patch.append(mpatches.Patch(color=color, label=label))
     
     plt.xlim([0, max_eps_len-1])
-    ax.set_ylim([-15., 115])
+    ax.set_ylim([-100., 350])
     plt.xlabel('Episode Duration', fontsize=15)
     plt.ylabel('Expected Reward Returns', fontsize=15)
     lgd=plt.legend(
@@ -91,7 +91,7 @@ def _plotter(max_eps_len, rewards_values, reward_ci_values, title):
     plt.show()
 
 
-def plot_reward_dist(max_eps_len=16, num_agents=4, hetero_agents=True, zero_mean=True, title=None):
+def plot_reward_dist(max_eps_len=16, num_agents=16, hetero_agents=False, zero_mean=False, title=None):
     if title is None:
         title = ""
     
@@ -142,4 +142,4 @@ def plot_reward_dist(max_eps_len=16, num_agents=4, hetero_agents=True, zero_mean
 
 
 if __name__ == "__main__":
-    plot_reward_dist(title="Cumulative Rewards for Zero-Mean Kernels")
+    plot_reward_dist(title="Cumulative Rewards for Baseline Kernels")

@@ -22,7 +22,7 @@ import random
 import ray
 from ray import air, tune
 from ray.rllib.algorithms.algorithm_config import AlgorithmConfig
-from ray.rllib.algorithms.pg import (
+from ray.rllib.algorithms.ppo import (
     PPO,
     PPOConfig,
     PPOTF2Policy,
@@ -50,41 +50,45 @@ def config_loader(config_path):
 # TODO: uncomment the configuration to select amongst homogenous or heterogenous agents
 # TODO: change the gov_rek flag in the configuration file for loading the governance layer
 
-configs = config_loader(cfg_pth.PPO_BASELINE_HMG_TRAINER_CONFIG) # Option 1
-# configs = config_loader(cfg_pth.A3C_BASELINE_HMG_TRAINER_CONFIG) # Option 2
-# configs = config_loader(cfg_pth.A3C_LARGE_HTR_TRAINER_CONFIG) # Option 3
-# configs = config_loader(cfg_pth.A3C_LARGE_HMG_TRAINER_CONFIG) # Option 4
+# configs = config_loader(cfg_pth.PPO_BASELINE_HMG_TRAINER_CONFIG) # Option 1
+# configs = config_loader(cfg_pth.PPO_BASELINE_HMG_TRAINER_CONFIG) # Option 2
+configs = config_loader(cfg_pth.PPO_LARGE_HMG_TRAINER_CONFIG) # Option 3
+# configs = config_loader(cfg_pth.PPO_LARGE_HMG_TRAINER_CONFIG) # Option 4
 
 
 def env_creator(config):
     env = CollusionDilemmaEnv(num_agents=config.num_agents,
                               gov_rek=config.gov_rek,
                               hetero_prob=config.hetero_prob,
-                              eps_len=config.eps_len)
+                              eps_len=config.eps_len,
+                              zero_mean=config.zero_mean,)
     return env
+
 
 register_env(configs.env_name, lambda config: PettingZooEnv(env_creator(configs)))
 
+
 def run_same_policy(args, stop):
-    """Use the same policy for both agents (trivial case)."""
-    config = PGConfig().environment(args.env_name).framework(args.framework)
+    """Use the same PPO policy for all the agents."""
+    config = (
+        PPOConfig()
+        .environment(args.env_name)
+        .framework(args.framework)
+        )
 
-    results = tune.Tuner(
-        "PG", param_space=config, run_config=air.RunConfig(stop=stop, verbose=1)
-    ).fit()
+    # results = tune.Tuner(
+    #     "PPO", param_space=config, run_config=air.RunConfig(stop=stop, verbose=1)
+    # ).fit()
 
-    if args.as_test:
-        # Check vs 0.0 as we are playing a zero-sum game.
-        check_learning_achieved(results, 0.0)
+    # if args.as_test:
+    #     check_learning_achieved(results, args.stop_reward)
+
+    results = ray.tune.run('PPO', name='PPO_LARGE_HMG_ZERO_MEAN_GOV_TRAINER', config=config, stop={ 'timesteps_total': 10_000 }, verbose=1)
+    
 
 
-def run_heuristic_vs_learned(args, use_lstm=False, algorithm="PG"):
+def run_heuristic_vs_learned(args, use_lstm=True, algorithm="PPO"):
     """Run heuristic policies vs a learned agent.
-
-    The learned agent should eventually reach a reward of ~5 with
-    use_lstm=False, and ~7 with use_lstm=True. The reason the LSTM policy
-    can perform better is since it can distinguish between the always_same vs
-    beat_last heuristics.
     """
 
     def select_policy(agent_id, episode, **kwargs):
@@ -160,13 +164,12 @@ def run_heuristic_vs_learned(args, use_lstm=False, algorithm="PG"):
 
 def run_with_custom_entropy_loss(config, stop):
     """Example of customizing the loss function of an existing policy.
-
     This performs about the same as the default loss does."""
 
     policy_cls = {
-        "torch": PGTorchPolicy,
-        "tf": PGTF1Policy,
-        "tf2": PGTF2Policy,
+        "torch": PPOTorchPolicy,
+        "tf": PPOTF1Policy,
+        "tf2": PPOTF2Policy,
     }[config.framework]
 
     class EntropyPolicy(policy_cls):
@@ -189,12 +192,12 @@ def run_with_custom_entropy_loss(config, stop):
                 )
             return policy.policy_loss
 
-    class EntropyLossPG(PG):
+    class EntropyLossPPO(PPO):
         @classmethod
         def get_default_policy_class(cls, config):
             return EntropyPolicy
 
-    run_heuristic_vs_learned(config, use_lstm=True, algorithm=EntropyLossPG)
+    run_heuristic_vs_learned(config, use_lstm=True, algorithm=EntropyLossPPO)
 
 
 if __name__ == "__main__":
@@ -208,18 +211,11 @@ if __name__ == "__main__":
     }
 
     run_same_policy(configs, stop=stop)
-    print("run_same_policy: ok.")
+    print("run_same_policy: PPO")
 
-    run_heuristic_vs_learned(configs, use_lstm=False)
-    print("run_heuristic_vs_learned(w/o lstm): ok.")
+    # run_heuristic_vs_learned(configs, use_lstm=True)
+    # print("run_heuristic_vs_learned (w/ lstm): ok.")
 
-    run_heuristic_vs_learned(configs, use_lstm=True)
-    print("run_heuristic_vs_learned (w/ lstm): ok.")
-
-    run_with_custom_entropy_loss(configs, stop=stop)
-    print("run_with_custom_entropy_loss: ok.")
-
-# https://github.com/ray-project/ray/blob/master/rllib/examples/rock_paper_scissors_multiagent.py, default implementation taken
-# https://flatland.aicrowd.com/environment/interface.html, setup PPO
-# https://github.com/ray-project/ray/blob/master/rllib/examples/two_step_game.py, setup stop values, add them to config as well
-# https://github.com/ray-project/ray/blob/master/rllib/examples/custom_eval.py, evaluation script metric setup
+    # run_with_custom_entropy_loss(configs, stop=stop)
+    # print("run_with_custom_entropy_loss: ok.")
+    ray.shutdown()

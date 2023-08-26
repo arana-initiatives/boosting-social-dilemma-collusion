@@ -90,7 +90,8 @@ class CollusionDilemmaEnv(AECEnv):
         "name": "collusion_dilemma_v0",
     }
 
-    def __init__(self, num_agents=2, hetero_prob=0., eps_len=10, gov_rek=False):
+    def __init__(self, num_agents=2, hetero_prob=0., eps_len=10, gov_rek=False, zero_mean=False):
+        self.zero_mean = zero_mean
         self.gov_rek = gov_rek
         self.num_actions = 2 # fixed binary action choices: "to collude, or not to"
         self._num_agents = num_agents
@@ -99,7 +100,7 @@ class CollusionDilemmaEnv(AECEnv):
         self.possible_agents = _get_agent_names(self._num_agents)
         self._observation_spaces = { agent: Discrete(self.num_actions) for agent in self.possible_agents }
         self._action_spaces = { agent: Discrete(self.num_actions) for agent in self.possible_agents }
-        self.payoff_vector = CollusionPayoffs(self._num_agents, self._hetero_prob, self.eps_len, self.gov_rek).agent_payoffs
+        self.payoff_vector = CollusionPayoffs(self._num_agents, self._hetero_prob, self.eps_len, self.gov_rek, self.zero_mean).agent_payoffs
         self.agent_name_mapping = dict(
             zip(self.possible_agents, list(range(len(self.possible_agents))))
         )
