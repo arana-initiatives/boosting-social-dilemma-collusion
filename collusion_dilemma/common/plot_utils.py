@@ -70,7 +70,7 @@ def _plotter(max_eps_len, rewards_values, reward_ci_values, title):
         color_patch.append(mpatches.Patch(color=color, label=label))
     
     plt.xlim([0, max_eps_len-1])
-    ax.set_ylim([-100., 350])
+    ax.set_ylim([-150., 400])
     plt.xlabel('Episode Duration', fontsize=15)
     plt.ylabel('Expected Reward Returns', fontsize=15)
     lgd=plt.legend(
