@@ -64,12 +64,12 @@ If you find the experimentation work interesting and useful for your work, pleas
 
 ```
 @misc{algorithmic-collusion-analysis,
-  author = {Rana, Ashish},
-  title = {Exploring Robustness of Automated Pricing Algorithmic Collusion in Financial Markets},
-  year = {2023},
+  author = {XXXX, XXXXXX},
+  title = {XXXX XXXX XXXX XXXX XXXX},
+  year = {XXXX},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/arana-initiatives/boosting-social-dilemma-collusion}},
+  howpublished = {XXX.XXX.XXX},
 }
 ```
 
