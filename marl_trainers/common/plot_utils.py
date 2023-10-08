@@ -43,8 +43,8 @@ def result_processor(progress_path_dict):
         exp_rewards_mean_arr, exp_rewards_std_arr = exp_rewards_mean_arr / np.array(eps_len_nested_list[0]), \
                                                     exp_rewards_std_arr / np.array(eps_len_nested_list[0])
         eps_len_arr = np.cumsum(eps_len_nested_list[0])
-        exp_rewards_ci_lower, exp_rewards_ci_upper = exp_rewards_mean_arr - (6. * exp_rewards_std_arr) / np.sqrt(len(exp_rewards_std_arr)), \
-                                                     exp_rewards_mean_arr + (6. * exp_rewards_std_arr) / np.sqrt(len(exp_rewards_std_arr))
+        exp_rewards_ci_lower, exp_rewards_ci_upper = exp_rewards_mean_arr - (2.58 * exp_rewards_std_arr) / np.sqrt(len(exp_rewards_std_arr)), \
+                                                     exp_rewards_mean_arr + (2.58 * exp_rewards_std_arr) / np.sqrt(len(exp_rewards_std_arr))
         
         eps_len_arr = np.insert(eps_len_arr, 0, 0, axis=0)
         exp_rewards_mean_arr = np.insert(exp_rewards_mean_arr, 0, 0., axis=0)
@@ -64,16 +64,17 @@ def _plotter(experiment_results_dict, title):
     sns.set_style({'font.family': 'Times New Roman'})
     plt.clf()
     ax = fig.gca()
-    colors = ["forestgreen", "cornflowerblue", "cadetblue"]
+    colors = ["forestgreen", "cornflowerblue", "cadetblue",
+              "saddlebrown", "darkkhaki", "darkorange"]
     color_patch = []
     for color, (experiment_name, data_tuple) in zip(colors, experiment_results_dict.items()):
         # sns.lineplot(data=data, color=color, linewidth=2.5)
-        ax.plot(data_tuple[0], data_tuple[1], color=color)
-        ax.fill_between(data_tuple[0], data_tuple[2], data_tuple[3], color=color, alpha=.4)
+        ax.plot(data_tuple[0], data_tuple[1], color=color, alpha=.6)
+        ax.fill_between(data_tuple[0], data_tuple[2], data_tuple[3], color=color, alpha=.3)
         color_patch.append(mpatches.Patch(color=color, label=experiment_name))
     
     plt.xlim([0, 12000])
-    ax.set_ylim([.5, 1.5])
+    ax.set_ylim([.0, 3.75])
     plt.xlabel('Timesteps Duration', fontsize=15)
     plt.ylabel('Reward Values', fontsize=15)
     lgd=plt.legend(
@@ -96,7 +97,8 @@ def _plotter(experiment_results_dict, title):
 
 def experiment_plotter(experiment_result_paths, title):
     
-    experiment_names = ["Baseline PPO Trainer", "Baseline Governed Trainer", "Zero-Mean Governed Trainer"]
+    experiment_names = ["Baseline PPO Trainer", "Baseline Governed Trainer", "Zero-Mean Governed Trainer",
+                        "Sparse Baseline PPO Trainer", "Sparse Baseline Governed Trainer", "Sparse Zero-Mean Governed Trainer"]
     progress_path_list = []
     # generate complete paths to load all the progress.csv result files
     for names, paths in zip(experiment_names, experiment_result_paths):
@@ -112,6 +114,8 @@ def experiment_plotter(experiment_result_paths, title):
 
 
 if __name__ == "__main__":
-    experiment_result_paths = [PPO_LARGE_HMG_TRAINER_PATH, PPO_LARGE_HMG_GOV_TRAINER_PATH, PPO_LARGE_HMG_ZERO_MEAN_GOV_TRAINER_PATH]
-    # experiment_result_paths = [PPO_LARGE_HTR_TRAINER_PATH, PPO_LARGE_HTR_GOV_TRAINER_PATH, PPO_LARGE_HTR_ZERO_MEAN_GOV_TRAINER_PATH]
-    experiment_plotter(experiment_result_paths, "Average Homogeneous Reward Returns")
+    # experiment_result_paths = [PPO_LARGE_HMG_TRAINER_PATH, PPO_LARGE_HMG_GOV_TRAINER_PATH, PPO_LARGE_HMG_ZERO_MEAN_GOV_TRAINER_PATH,
+    #                            PPO_LARGE_SPARSE_HMG_TRAINER_PATH, PPO_LARGE_SPARSE_HMG_GOV_TRAINER_PATH, PPO_LARGE_SPARSE_HMG_ZERO_MEAN_GOV_TRAINER_PATH]
+    experiment_result_paths = [PPO_LARGE_HTR_TRAINER_PATH, PPO_LARGE_HTR_GOV_TRAINER_PATH, PPO_LARGE_HTR_ZERO_MEAN_GOV_TRAINER_PATH,
+                               PPO_LARGE_SPARSE_HTR_TRAINER_PATH, PPO_LARGE_SPARSE_HTR_GOV_TRAINER_PATH, PPO_LARGE_SPARSE_HTR_ZERO_MEAN_GOV_TRAINER_PATH]
+    experiment_plotter(experiment_result_paths, "Average Heterogeneous Reward Returns")

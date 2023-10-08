@@ -53,7 +53,9 @@ def config_loader(config_path):
 # configs = config_loader(cfg_pth.PPO_BASELINE_HMG_TRAINER_CONFIG) # Option 1
 # configs = config_loader(cfg_pth.PPO_BASELINE_HTR_TRAINER_CONFIG) # Option 2
 # configs = config_loader(cfg_pth.PPO_LARGE_HMG_TRAINER_CONFIG) # Option 3
-configs = config_loader(cfg_pth.PPO_LARGE_HTR_TRAINER_CONFIG) # Option 4
+# configs = config_loader(cfg_pth.PPO_LARGE_HTR_TRAINER_CONFIG) # Option 4
+# configs = config_loader(cfg_pth.PPO_LARGE_SPARSE_HMG_TRAINER_CONFIG) # Option 5
+configs = config_loader(cfg_pth.PPO_LARGE_SPARSE_HTR_TRAINER_CONFIG) # Option 6
 
 
 def env_creator(config):
@@ -61,7 +63,7 @@ def env_creator(config):
                               gov_rek=config.gov_rek,
                               hetero_prob=config.hetero_prob,
                               eps_len=config.eps_len,
-                              zero_mean=config.zero_mean,)
+                              zero_mean=config.zero_mean)
     return env
 
 
@@ -83,7 +85,7 @@ def run_same_policy(args, stop):
     # if args.as_test:
     #     check_learning_achieved(results, args.stop_reward)
 
-    results = ray.tune.run('PPO', name='PPO_LARGE_HTR_ZERO_MEAN_GOV_TRAINER', config=config, stop={ 'timesteps_total': 12_000 }, verbose=1)
+    results = ray.tune.run('PPO', name='PPO_LARGE_SPARSE_HTR_ZERO_MEAN_GOV_TRAINER', config=config, stop={ 'timesteps_total': 12_000 }, verbose=1)
     
 
 
